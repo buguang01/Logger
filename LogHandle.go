@@ -1,7 +1,6 @@
 package Logger
 
 import (
-	"buguang01/gsframe/util"
 	"fmt"
 	"log"
 	"os"
@@ -54,7 +53,7 @@ func NewLogHandle(dt time.Time, lv LogLevel, pathstr string) (result *LogHandleM
 //NewLogHandleByKeyID 开新的日志 用keyid来开
 func NewLogHandleByKeyID(dt time.Time, keyid int, pathstr string) (result *LogHandleModel) {
 	result = new(LogHandleModel)
-	result.CurrDay = util.GetDate(dt)
+	result.CurrDay = GetDate(dt)
 	result.LogChan = make(chan *LogMsgModel, 10)
 
 	filename := fmt.Sprintf("%d_%02d.%02d.%02d.log",

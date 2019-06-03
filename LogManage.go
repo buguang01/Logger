@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+// VERSION
+const VERSION = "0.9.0"
+
 var (
 	logExample *LogManageModel
 )

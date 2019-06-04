@@ -8,6 +8,8 @@ import (
 	"runtime/debug"
 	"sync"
 	"time"
+
+	"github.com/buguang01/util"
 )
 
 // VERSION
@@ -47,7 +49,7 @@ func Init(minlv LogLevel, pathstr string) {
 	logExample = new(LogManageModel)
 	logExample.MiniLv = minlv
 	logExample.PathStr = pathstr
-	logExample.CurrDay = GetMinDateTime()
+	logExample.CurrDay = util.GetMinDateTime()
 	logExample.LogList = make(map[LogLevel]*LogHandleModel)
 	logExample.LogKeyList = make(map[int]*LogHandleModel)
 	logExample.ListenKeyList = make(map[int]bool)
@@ -101,10 +103,10 @@ func (lgmd *LogManageModel) Handle() {
 
 //checkDir  检查只定新时间是否需要修改目录
 func (lgmd *LogManageModel) checkDir(d time.Time) {
-	if lgmd.CurrDay == GetDate(d) {
+	if lgmd.CurrDay == util.GetDate(d) {
 		return
 	}
-	lgmd.CurrDay = GetCurrDate()
+	lgmd.CurrDay = util.GetCurrDate()
 	dir := fmt.Sprintf("%d_%02d_%02d",
 		lgmd.CurrDay.Year(),
 		lgmd.CurrDay.Month(),
@@ -267,6 +269,6 @@ func PFatalKey(msgstr interface{}, keyid int) {
 
 //PrintLog 扇入的入口
 func PrintLog(msg *LogMsgModel) {
-	msg.CreateTime = GetCurrTime()
+	msg.CreateTime = util.GetCurrTime()
 	logExample.msgchan <- msg
 }

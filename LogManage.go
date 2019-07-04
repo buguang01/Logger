@@ -10,10 +10,11 @@ import (
 	"time"
 
 	"github.com/buguang01/util"
+	"github.com/gookit/color"
 )
 
 // VERSION
-const VERSION = "0.9.0"
+const VERSION = "1.0.2"
 
 var (
 	logExample *LogManageModel
@@ -36,6 +37,7 @@ type LogManageModel struct {
 	LogKeyList    map[int]*LogHandleModel      //当前为所有需要记录keyid日志
 	MiniLv        LogLevel                     //最小等级
 	PathStr       string                       //保存的基础目录
+	LogModeType   LogMode                      //日志模式
 	CurrDir       string                       //是按时间做目录
 	CurrDay       time.Time                    //当前写日志的那个目录的日期
 	ListenKeyList map[int]bool                 //监听key列表
@@ -45,10 +47,11 @@ type LogManageModel struct {
 }
 
 //Init 初始化日志管理器的参数
-func Init(minlv LogLevel, pathstr string) {
+func Init(minlv LogLevel, pathstr string, logmode LogMode) {
 	logExample = new(LogManageModel)
 	logExample.MiniLv = minlv
 	logExample.PathStr = pathstr
+	logExample.LogModeType = logmode
 	logExample.CurrDay = util.GetMinDateTime()
 	logExample.LogList = make(map[LogLevel]*LogHandleModel)
 	logExample.LogKeyList = make(map[int]*LogHandleModel)
@@ -77,26 +80,84 @@ func (lgmd *LogManageModel) Handle() {
 	for msg := range lgmd.msgchan {
 		//拿到了一个要写的日志
 		var lghd *LogHandleModel
-		//确认目录是不是有了
-		lgmd.checkDir(msg.CreateTime)
-		//如果有设置keyid就检查一下这个keyid要不要写日志
-		if msg.KeyID != -1 {
-			if _, ok := lgmd.ListenKeyList[msg.KeyID]; ok {
-				lghd = lgmd.getLogHandleByKeyID(msg.KeyID, msg.CreateTime)
-				lghd.LogChan <- msg
+		if lgmd.LogModeType < LogModeFmt {
+			//确认目录是不是有了
+			lgmd.checkDir(msg.CreateTime)
+			//如果有设置keyid就检查一下这个keyid要不要写日志
+			if msg.KeyID != -1 {
+				if _, ok := lgmd.ListenKeyList[msg.KeyID]; ok {
+					lghd = lgmd.getLogHandleByKeyID(msg.KeyID, msg.CreateTime)
+					lghd.LogChan <- msg
+				}
 			}
 		}
+
 		//判断是不是需要写入的日志
 		if msg.LogLv < lgmd.MiniLv {
 			continue
 		}
 
-		//拿到目标日志对象
-		lghd = lgmd.getLogModel(msg.LogLv, msg.CreateTime)
-		lghd.LogChan <- msg
-		//写入主日志文件
-		lghd = lgmd.getLogModel(0, msg.CreateTime)
-		lghd.LogChan <- msg
+		if lgmd.LogModeType == LogModeDef {
+			//拿到目标日志对象
+			lghd = lgmd.getLogModel(msg.LogLv, msg.CreateTime)
+			lghd.LogChan <- msg
+		}
+		if lgmd.LogModeType == LogModeFmt {
+			fmtPrint(msg)
+		} else {
+			//写入主日志文件
+			lghd = lgmd.getLogModel(0, msg.CreateTime)
+			lghd.LogChan <- msg
+		}
+
+	}
+}
+
+func fmtPrint(msg *LogMsgModel) {
+	msgstr := ""
+	if msg.Stack == "" {
+		msgstr = fmt.Sprintf("%d/%02d/%02d %02d:%02d:%02d %s %s",
+			msg.CreateTime.Year(),
+			msg.CreateTime.Month(),
+			msg.CreateTime.Day(),
+			msg.CreateTime.Hour(),
+			msg.CreateTime.Minute(),
+			msg.CreateTime.Second(),
+			GetLogNameByLogLevel(msg.LogLv),
+			msg.Msg)
+
+	} else {
+		msgstr = fmt.Sprintf("%d/%02d/%02d %02d:%02d:%02d %s %s\r\n%v",
+			msg.CreateTime.Year(),
+			msg.CreateTime.Month(),
+			msg.CreateTime.Day(),
+			msg.CreateTime.Hour(),
+			msg.CreateTime.Minute(),
+			msg.CreateTime.Second(),
+			GetLogNameByLogLevel(msg.LogLv),
+			msg.Msg,
+			msg.Stack)
+	}
+	if msg.LogLv == LogLevelmainlevel {
+		color.White.Println(msgstr)
+	} else if msg.LogLv <= LogLeveldebuglevel {
+		color.Yellow.Println(msgstr)
+
+	} else if msg.LogLv <= LogLevelinfolevel {
+		color.Green.Println(msgstr)
+
+	} else if msg.LogLv <= LogLevelstatuslevel {
+		color.Gray.Println(msgstr)
+
+	} else if msg.LogLv <= LogLevelerrorlevel {
+		color.Magenta.Println(msgstr)
+
+	} else if msg.LogLv <= LogLevelfatallevel {
+		color.Red.Println(msgstr)
+
+	} else {
+		color.Normal.Println(msgstr)
+		// fmt.Println(msgstr)
 
 	}
 }

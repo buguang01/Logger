@@ -18,6 +18,15 @@ const (
 	LogLevelfatallevel  LogLevel = 50
 )
 
+//日志模式
+type LogMode uint
+
+const (
+	LogModeDef  LogMode = 0 //默认
+	LogModeMain LogMode = 1 //只输出main文件
+	LogModeFmt  LogMode = 2 //只出输cmd
+)
+
 const (
 	pmainlevel   = "[main		]"
 	pdebuglevel  = "[debug		]"

@@ -16,7 +16,7 @@ func TestLog(t *testing.T) {
 		}
 	}()
 	//初始化日志模块
-	Init(0, "logs", LogModeDef)
+	Init(0, "logs", LogModeFmt)
 	SetListenKeyID(1001)
 	PDebug("test1")
 	PInfo("test2")

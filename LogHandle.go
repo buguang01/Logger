@@ -78,7 +78,7 @@ func (lghd *LogHandleModel) handle() {
 	msgstr := ""
 	for msg := range lghd.LogChan {
 		if msg.Stack == "" {
-			msgstr = fmt.Sprintf("%d/%02d/%02d %02d:%02d:%02d %s %s",
+			msgstr = fmt.Sprintf("%d/%02d/%02d %02d:%02d:%02d %s %d %s",
 				msg.CreateTime.Year(),
 				msg.CreateTime.Month(),
 				msg.CreateTime.Day(),
@@ -86,10 +86,11 @@ func (lghd *LogHandleModel) handle() {
 				msg.CreateTime.Minute(),
 				msg.CreateTime.Second(),
 				GetLogNameByLogLevel(msg.LogLv),
+				msg.KeyID,
 				msg.Msg)
 
 		} else {
-			msgstr = fmt.Sprintf("%d/%02d/%02d %02d:%02d:%02d %s %s\r\n%v",
+			msgstr = fmt.Sprintf("%d/%02d/%02d %02d:%02d:%02d %s %d %s\r\n%v",
 				msg.CreateTime.Year(),
 				msg.CreateTime.Month(),
 				msg.CreateTime.Day(),
@@ -97,6 +98,7 @@ func (lghd *LogHandleModel) handle() {
 				msg.CreateTime.Minute(),
 				msg.CreateTime.Second(),
 				GetLogNameByLogLevel(msg.LogLv),
+				msg.KeyID,
 				msg.Msg,
 				msg.Stack)
 		}

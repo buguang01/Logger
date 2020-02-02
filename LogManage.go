@@ -9,12 +9,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/buguang01/util/threads"
+
 	"github.com/buguang01/util"
 	"github.com/gookit/color"
 )
 
 // VERSION
-const VERSION = "1.0.5"
+const VERSION = "1.0.6"
 
 var (
 	logExample *LogManageModel
@@ -57,6 +59,10 @@ func Init(minlv LogLevel, pathstr string, logmode LogMode) {
 	logExample.LogKeyList = make(map[int]*LogHandleModel)
 	logExample.ListenKeyList = make(map[int]bool)
 	logExample.msgchan = make(chan *LogMsgModel, 10)
+	//重新设置协程的日志输出
+	threads.SetUtilLog(func(err interface{}) {
+		PFatal(err)
+	})
 	go logExample.Handle()
 }
 

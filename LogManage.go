@@ -16,7 +16,7 @@ import (
 )
 
 // VERSION
-const VERSION = "1.0.7"
+const VERSION = "1.1.7"
 
 var (
 	logExample *LogManageModel

@@ -16,7 +16,7 @@ import (
 )
 
 // VERSION
-const VERSION = "1.0.6"
+const VERSION = "1.0.7"
 
 var (
 	logExample *LogManageModel
@@ -333,8 +333,9 @@ func PFatalKey(msgstr interface{}, keyid int) {
 		KeyID: keyid,
 	})
 }
+
 //PAlart 自定义等级日志
-func PAlart(loglv LogLevel ,msgstr interface{}) {
+func PAlart(loglv LogLevel, msgstr interface{}) {
 	PrintLog(&LogMsgModel{
 		Msg:   fmt.Sprintf("%+v", msgstr),
 		LogLv: loglv,
@@ -342,8 +343,9 @@ func PAlart(loglv LogLevel ,msgstr interface{}) {
 		KeyID: -1,
 	})
 }
+
 //PAlartKey 指定key的自定义等级日志
-func PAlartKey(loglv LogLevel ,msgstr interface{}, keyid int) {
+func PAlartKey(loglv LogLevel, msgstr interface{}, keyid int) {
 	PrintLog(&LogMsgModel{
 		Msg:   fmt.Sprintf("%+v", msgstr),
 		LogLv: loglv,

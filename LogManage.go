@@ -317,7 +317,7 @@ func PErrorKey(err error, msgstr string, keyid int, a ...interface{}) {
 //PFatal 程序异常日志
 func PFatal(msgstr interface{}) {
 	PrintLog(&LogMsgModel{
-		Msg:   fmt.Sprintf("%v", msgstr),
+		Msg:   fmt.Sprintf("%+v", msgstr),
 		LogLv: LogLevelfatallevel,
 		Stack: string(debug.Stack()),
 		KeyID: -1,
@@ -327,9 +327,27 @@ func PFatal(msgstr interface{}) {
 //PFatalKey 指定key的程序异常日志
 func PFatalKey(msgstr interface{}, keyid int) {
 	PrintLog(&LogMsgModel{
-		Msg:   fmt.Sprintf("%v", msgstr),
+		Msg:   fmt.Sprintf("%+v", msgstr),
 		LogLv: LogLevelfatallevel,
 		Stack: string(debug.Stack()),
+		KeyID: keyid,
+	})
+}
+//PAlart 自定义等级日志
+func PAlart(loglv LogLevel ,msgstr interface{}) {
+	PrintLog(&LogMsgModel{
+		Msg:   fmt.Sprintf("%+v", msgstr),
+		LogLv: loglv,
+		Stack: "",
+		KeyID: -1,
+	})
+}
+//PAlartKey 指定key的自定义等级日志
+func PAlartKey(loglv LogLevel ,msgstr interface{}, keyid int) {
+	PrintLog(&LogMsgModel{
+		Msg:   fmt.Sprintf("%+v", msgstr),
+		LogLv: loglv,
+		Stack: "",
 		KeyID: keyid,
 	})
 }

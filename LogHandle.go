@@ -113,7 +113,7 @@ func (lghd *LogHandleModel) handle() {
 				color.Green.Println(msgstr)
 
 			} else if msg.LogLv <= LogLevelstatuslevel {
-				color.Gray.Println(msgstr)
+				color.Cyan.Println(msgstr)
 
 			} else if msg.LogLv <= LogLevelerrorlevel {
 				color.Magenta.Println(msgstr)
